@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cat Facts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif; 
+    }
+
+    h1 {
+      text-align: center; 
+    }
+
+    .select-container {
+      display: flex; 
+      justify-content: center; 
+      margin-bottom: 15px; 
+    }
+
+    select,
+    input[type="number"] {
+      padding: 5px;
+      margin-right: 10px; 
+      border: 1px solid #ddd;
+    }
+
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #3e8e41; 
+    }
+
+    table {
+      border-collapse: collapse; 
+      width: 100%; 
+      margin: 0 auto; 
+    }
+
+    th,
+    td {
+      text-align: left; 
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2; 
+    }
+  </style>
+</head>
+<body>
+  <br>
+  <h1>Cat Facts</h1>
+  <br>
+  <div class="select-container">
+    <select id="mySelect">
+      <option value="eng">English</option>
+      <option value="ger">German</option>
+      <option value="ben">Bengali</option>
+      <option value="esp">Spanish</option>
+      <option value="rus">Russian</option>
+    </select>
+    <input type="number" id="myNumber" placeholder="Enter a number">
+  </div>
+
+  <button class="button" onclick="fetchFact()">Fetch Fact</button>
+
+  <table id="paragraphs-table"></table>
+
+  <script>
+    async function fetchFact() {
+  const paragraphsTable = document.getElementById('paragraphs-table');
+
+  const theSelect = document.getElementById('mySelect');
+  const nbr = document.getElementById('myNumber'); 
+        
+  // change it to 1 if it's a negative number
+  if (nbr.value < 0) {
+    nbr.value = 1;
+  }
+
+  const selectedLanguage = theSelect.value;
+  const numberOfFacts = nbr.value;
+
+  const url = `https://meowfacts.herokuapp.com/?lang=${selectedLanguage}&count=${numberOfFacts}`; //making the url while inserting the parameters in it
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {                                                                     //fetching the data and putting it in a table
+      const tableBody = document.createElement('tbody');
+
+      data.data.forEach(paragraph => {
+        const paragraphText = typeof paragraph === 'string' ? paragraph : paragraph.text;
+        const tableRow = document.createElement('tr');
+        const tableCell = document.createElement('td');
+        tableCell.textContent = paragraphText;
+        tableRow.appendChild(tableCell);
+        tableBody.appendChild(tableRow);
+      });
+
+      paragraphsTable.appendChild(tableBody);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      const tableRow = document.createElement('tr');
+      const tableCell = document.createElement('td');                                           //catch if the fetching didn't work
+      tableCell.textContent = 'Failed to fetch paragraphs!';
+      tableRow.appendChild(tableCell);
+      paragraphsTable.appendChild(tableRow);
+    });
+}
+
+  </script>
+</body>
+</html>
